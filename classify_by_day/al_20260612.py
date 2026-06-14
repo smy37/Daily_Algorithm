@@ -1,42 +1,30 @@
+import heapq
+
+
 class Solution:
     def leftmostBuildingQueries(self, heights: List[int], queries: List[List[int]]) -> List[int]:
-        answer = []
         n = len(heights)
+        hq = []
+        rest = [[] for _ in range(n)]
+        answer = [-1 for _ in range(len(queries))]
 
-        memory = {}
+        for idx, [a, b] in enumerate(queries):
+            if a > b:
+                a, b = b, a
+
+            if a == b:
+                answer[idx] = b
+            elif heights[a] < heights[b]:
+                answer[idx] = b
+            else:
+                rest[b].append(([heights[a], idx]))
 
         for i in range(n):
-            memory[i] = [i]
-            for j in range(i + 1, n):
-                if heights[i] < heights[j]:
-                    memory[i].append(j)
+            for height, idx in rest[i]:
+                heapq.heappush(hq, [height, idx])
 
-        for t1, t2 in queries:
-            l_idx = min(t1, t2)
-            r_idx = max(t1, t2)
-            if l_idx == r_idx:
-                answer.append(r_idx)
-                continue
-            if heights[l_idx] < heights[r_idx]:
-                if len(memory[r_idx]) > 0:
-                    answer.append(memory[r_idx][0])
-                else:
-                    answer.append(-1)
-            elif heights[l_idx] == heights[r_idx]:
-                if len(memory[r_idx]) > 1:
-                    answer.append(memory[r_idx][1])
-                else:
-                    answer.append(-1)
-            else:
-                if len(memory[l_idx]) > 0:
-                    for n in memory[l_idx]:
-                        if n >= r_idx:
-                            answer.append(n)
-                            break
-                    else:
-                        answer.append(-1)
-                else:
-                    answer.append(-1)
+            while hq and hq[0][0] < heights[i]:
+                _, idx = heapq.heappop(hq)
+                answer[idx] = i
 
         return answer
-
