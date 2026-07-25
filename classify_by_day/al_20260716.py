@@ -9,14 +9,14 @@ class Solution:
         self.y_c = y_center
 
     def randPoint(self) -> List[float]:
-        dist = random.uniform(-self.r, self.r)
+        dist = self.r*math.sqrt(random.uniform(0, 1))
         angle = random.uniform(0, 2*math.pi)
         
 
-        x = math.cos(angle)
-        y = math.sin(angle)
+        x = math.cos(angle)*dist
+        y = math.sin(angle)*dist
 
-        return [angle*dist, angle*dist]
+        return [x+self.x_c, y+self.y_c]
 
 
 # Your Solution object will be instantiated and called as such:
